@@ -1,0 +1,29 @@
+# Python bytecode (temporary files created when you run code)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database (keep your local data off the public internet)
+db.sqlite3
+
+# Media and Static (usually too large for GitHub)
+media/
+static/
+
+# Environment variables (where you might hide secret keys)
+.env
+venv/
+env/
+
+# Your Blackbox/Fix scripts (clean up the repo)
+fix_filenames.py
+check_media.py
+rename_files.py
+restore_media.py
+restore_to_6am.py
+posts.json
+TODO.md
+
+# OS files
+.DS_Store
+Thumbs.db

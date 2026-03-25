@@ -1,0 +1,120 @@
+{% extends "blog/base.html" %}
+{% block content %}
+<style>
+    /* Responsive video container */
+    .video-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: 5px;
+        background: #000;
+    }
+
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .post-media-display {
+        width: 100%;
+        max-height: 500px;
+        object-fit: contain;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+</style>
+
+<div class="infinite-container">
+    {% for post in posts %}
+    <article class="media content-section infinite-item"
+        style="display: flex; padding: 20px; border-bottom: 1px solid #ccc;">
+        <a href="{% url 'user-posts' post.author.username %}">
+            <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}"
+                style="width: 65px; height: 65px; object-fit: cover; margin-right: 20px;">
+        </a>
+
+        <div class="media-body" style="flex: 1;">
+            <div class="article-metadata" style="margin-bottom: 10px;">
+                <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+                <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+                <!--  {% if post.author == user %}
+               <div class="d-inline">
+                    <a class="btn btn-secondary btn-sm mt-0 mb-0" href="{% url 'post-update' post.id %}">Edit</a>
+                    <a class="btn btn-danger btn-sm mt-0 mb-0" href="{% url 'post-delete' post.id %}">Delete</a>
+                </div>
+                {% endif %} -->
+            </div> 
+
+            <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
+
+            <div class="media-content mb-3">
+                {% if post.video_url %}
+                <div class="video-container mb-2">
+                    <iframe src="{{ post.embed_video_url }}" frameborder="0" allowfullscreen></iframe>
+                </div>
+                {% elif post.video %}
+                <div class="text-center mb-2">
+                    <video width="100%" controls
+                        style="border-radius: 5px; max-height: 500px; background-color: black;">
+                        <source src="{{ post.video.url }}" type="video/mp4">
+                    </video>
+                </div>
+                {% elif post.image %}
+                <img src="{{ post.image.url }}" class="img-fluid" style="border-radius: 5px;">
+                {% endif %}
+            </div>
+
+            <p class="article-content">{{ post.content }}</p>
+
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    {% if user.is_authenticated %}
+                    <button id="like-btn-{{ post.id }}" class="btn btn-lg btn-outline-primary"
+                        onclick="toggleLike({{ post.id }})">
+                        <span id="like-icon-{{ post.id }}" class="fs-4">
+                            {% if user in post.likes.all %}❤️{% else %}👍{% endif %}
+                        </span>
+                    </button>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-lg btn-outline-primary"><span class="fs-4">👍</span></a>
+                    {% endif %}
+                    <span class="fw-bold"><span id="like-count-{{ post.id }}">{{ post.likes.count }}</span> likes</span>
+                </div>
+            </div>
+
+            <div class="mt-2 border-top pt-2">
+                <a href="{% url 'post-detail' post.id %}" class="btn btn-sm btn-light text-primary">
+                    💬 comments
+
+                </a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+
+{% if page_obj.has_next %}
+<a class="infinite-more-link" href="?page={{ page_obj.next_page_number }}" style="display:none;"></a>
+{% endif %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/jquery.waypoints.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/shortcuts/infinite.min.js"></script>
+
+<script>
+    function toggleLike(postId) {
+        $.ajax({
+            type: "POST",
+            url: "/post/" + postId + "/like/",
+            data: { 'csrfmiddlewaretoken': '{{ csrf_token }}' },
+            success: function (data) {
+                $('#like-count-' + postId).text(data.total_likes);
+                $('#like-icon-' + postId).text(data.liked ? '❤️' : '👍');
+            }
+        });
+    }
+</script>
+{% endblock content %}
