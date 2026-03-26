@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ovlv7+tofc_ur7zkmfq2tawa=wm@si0r1)zjzkf9ia09n7(8+r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['connect-blog-osoy.onrender.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -53,7 +53,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # Add this line!
+    # ... other middlewares ...
 ]
+
 
 ROOT_URLCONF = 'dj_connect.urls'
 
