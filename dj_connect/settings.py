@@ -1,15 +1,16 @@
+
 import os
 import dj_database_url
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ovlv7+tofc_ur7zkmfq2tawa=wm@si0r1)zjzkf9ia09n7(8+r'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-ovlv7+tofc_ur7zkmfq2tawa=wm@si0r1)zjzkf9ia09n7(8+r')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Check if we are on Render. If not, default to True for local work.
+DEBUG = os.environ.get('RENDER', 'False') == 'False'
 
 ALLOWED_HOSTS = ['connect-blog-osoy.onrender.com', '127.0.0.1', 'localhost']
 
@@ -24,12 +25,13 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic', 
     'django.contrib.staticfiles',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -61,7 +63,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dj_connect.wsgi.application'
 
-# Database configuration (PostgreSQL for Render, SQLite for Local)
+# Database configuration
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///db.sqlite3',
@@ -83,9 +85,10 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'blog', 'static')]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
